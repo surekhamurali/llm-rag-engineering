@@ -10,7 +10,7 @@ load_dotenv()
 MODEL = os.getenv("OLLAMA_MODEL", "llama3.2:1b")
 
 
-def ask_llm(question: str) -> str:
+def ask_llm(question: str):
     """Send a question to a locally running LLM."""
 
     response = ollama.chat(
@@ -31,7 +31,7 @@ def ask_llm(question: str) -> str:
         ],
     )
 
-    return response["message"]["content"]
+    return response
 
 
 def main():
@@ -44,15 +44,18 @@ def main():
     start_time = time.perf_counter()
 
     try:
-        answer = ask_llm(question)
+        response = ask_llm(question)
 
         elapsed = time.perf_counter() - start_time
 
         print("\nLLM Response:")
-        print(answer)
+        print(response["message"]["content"])
 
         print(f"\nResponse time: {elapsed:.2f} seconds")
         print(f"Model: {MODEL}")
+
+        print("\nPrompt tokens:", response.get("prompt_eval_count"))
+        print("Generated tokens:", response.get("eval_count"))
 
     except ollama.ResponseError as error:
         print(f"Ollama model error: {error}")
